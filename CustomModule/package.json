@@ -1,0 +1,7 @@
+{
+  "name": "customNodeJSModule",
+  "version": "0.0.1",
+  "dependencies": {
+    "date": "file:modules/date"
+  }
+}
