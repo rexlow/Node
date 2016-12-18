@@ -4,52 +4,47 @@
 // If needed, traverse the DOM to get to the data you would like to extract
 
 var express = require('express');
-var fs = require('fs');
+var fs      = require('fs');
 var request = require('request');
 var cheerio = require('cheerio');
+var app     = express();
 
-var app = express();
-
-app.get('/scrape', function(request, respond) {
-
+app.get('/scrape', function(req, res){
+  // Let's scrape Anchorman 2
   url = 'http://www.imdb.com/title/tt1229340/';
 
-  request(url, function(error, response, html) {
-
-    if (!error) {
+  request(url, function(error, response, html){
+    if(!error){
       var $ = cheerio.load(html);
+
       var title, release, rating;
-      var json = { title: "", release: "", rating: ""};
+      var json = { title : "", release : "", rating : ""};
 
-      $('.header').filter(function() {
-        var data = $(this); // store the data we filter into a variable so we can easily see what's going on.
-
-        title = data.children().first().text();
-        release = data.children().last().children().text();
+      $('.title_wrapper').filter(function(){
+        var data = $(this);
+        title = data.children().first().text().trim();
+        release = data.children().last().children().last().text().trim();
 
         json.title = title;
         json.release = release;
       })
 
-      $('.star-box-giga-star').filter(function() {
+      $('.ratingValue').filter(function(){
         var data = $(this);
-
-        rating = data.text();
+        rating = data.text().trim();
 
         json.rating = rating;
       })
     }
 
-    //write the result to json file
-    fs.writeFile('output.json', JSON.stringify(json, null, 4), function(err) {
-      console.log("File successfully written!");
+    fs.writeFile('output.json', JSON.stringify(json, null, 4), function(err){
+      console.log('File successfully written! - Check your project directory for the output.json file');
     })
 
-    response.send("check your console!");
-  });
-});
+    res.send('Check your console!')
+  })
+})
 
-app.listen('8081');
-console.log('shits happening on port 8081');
-
+app.listen('8081')
+console.log('Magic happens on port 8081');
 exports = module.exports = app;
